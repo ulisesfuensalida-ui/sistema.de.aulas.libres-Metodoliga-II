@@ -1,0 +1,601 @@
+/* ==========================================================================
+   SISTEMA DE AULAS LIBRES · hoja de estilos
+
+   ÍNDICE
+   1. Variables (tema claro y oscuro)
+   2. Base
+   3. Encabezado y pestañas
+   4. Contenido principal
+   5. Filtros, formularios y botones
+   6. Tarjetas de aulas
+   7. Avisos
+   8. Grilla semanal de laboratorios
+   9. Vista por día y lista de fallas
+   10. Diálogo y notificación
+   11. Pie de página
+   12. Pantallas chicas y accesibilidad
+   ========================================================================== */
+
+
+/* 1. VARIABLES
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Superficies y texto */
+  --bg:     #f4f6f3;   /* fondo de la página */
+  --card:   #ffffff;   /* tarjetas, tabla, diálogo */
+  --ink:    #1c2523;   /* texto principal */
+  --mute:   #65726e;   /* texto secundario */
+  --line:   #dde3df;   /* bordes y separadores */
+
+  /* Acento (reservas, pestaña activa, botón principal) */
+  --acc:    #0f766e;
+  --accbg:  #dcf1ee;
+
+  /* Estados */
+  --ok:     #176b36;   /* libre / funciona */
+  --okbg:   #e1f3e7;
+  --bad:    #b42318;   /* con falla */
+  --badbg:  #fde8e6;
+  --warn:   #8a5a06;   /* avisos */
+  --warnbg: #fcf0d2;
+  --busy:   #e8ebe9;   /* clase oficial / ocupado */
+
+  /* Forma y profundidad */
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   14px;
+  --shadow: 0 1px 2px rgba(28, 37, 35, .06), 0 4px 14px rgba(28, 37, 35, .05);
+
+  /* Zonas seguras en celulares con notch */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Tema oscuro automático (según el sistema) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:     #121917;
+    --card:   #1b2421;
+    --ink:    #e6eeeb;
+    --mute:   #93a39e;
+    --line:   #2d3a36;
+    --acc:    #4fd1c0;
+    --accbg:  #173a35;
+    --ok:     #6fd592;
+    --okbg:   #17321f;
+    --bad:    #ff8f84;
+    --badbg:  #3b1b18;
+    --warn:   #f0c35f;
+    --warnbg: #3a2e12;
+    --busy:   #25302d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35);
+  }
+}
+
+/* Tema oscuro forzado a mano */
+:root[data-theme="dark"] {
+  --bg:     #121917;
+  --card:   #1b2421;
+  --ink:    #e6eeeb;
+  --mute:   #93a39e;
+  --line:   #2d3a36;
+  --acc:    #4fd1c0;
+  --accbg:  #173a35;
+  --ok:     #6fd592;
+  --okbg:   #17321f;
+  --bad:    #ff8f84;
+  --badbg:  #3b1b18;
+  --warn:   #f0c35f;
+  --warnbg: #3a2e12;
+  --busy:   #25302d;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+
+/* 2. BASE
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+/* Con un diálogo abierto, la página de fondo no se desplaza */
+html:has(dialog[open]) { overflow: hidden; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { line-height: 1.25; }
+
+h2 {
+  margin: 30px 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--mute);
+}
+
+:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
+
+
+/* 3. ENCABEZADO Y PESTAÑAS
+   -------------------------------------------------------------------------- */
+
+header {
+  padding: 20px 0 0;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -.015em;
+}
+
+h1 small {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--mute);
+}
+
+nav {
+  display: flex;
+  gap: 2px;
+  margin: 16px 0 0 -16px;      /* el texto de la 1.ª pestaña queda alineado con el título */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+
+nav button {
+  padding: 12px 16px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--mute);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+nav button:hover { color: var(--ink); }
+nav button.on {
+  color: var(--acc);
+  border-color: var(--acc);
+}
+
+
+/* 4. CONTENIDO PRINCIPAL
+   -------------------------------------------------------------------------- */
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px 18px 48px;
+}
+
+/* Resumen bajo los filtros: "5 de 8 espacios libres…" */
+.sum {
+  margin: 6px 0 16px;
+  color: var(--mute);
+}
+.sum b { color: var(--ink); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 14px;
+}
+
+
+/* 5. FILTROS, FORMULARIOS Y BOTONES
+   -------------------------------------------------------------------------- */
+
+/* Barra de filtros (arriba de cada vista) */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+select,
+input {
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color .15s, box-shadow .15s;
+}
+select:hover,
+input:hover { border-color: var(--mute); }
+select:focus-visible,
+input:focus-visible {
+  outline: 0;
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px var(--accbg);
+}
+input::placeholder { color: var(--mute); opacity: .7; }
+
+/* Botones */
+.btn {
+  min-height: 38px;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, filter .15s;
+}
+.btn:hover  { border-color: var(--acc); }
+.btn:active { filter: brightness(.95); }
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.btn.p {                       /* principal: Reportar falla, Reservar */
+  background: var(--acc);
+  border-color: var(--acc);
+  color: var(--bg);
+}
+.btn.p:hover { filter: brightness(1.08); }
+
+.btn.on {                      /* activo: filtro, laboratorio o modo elegido */
+  background: var(--accbg);
+  border-color: var(--acc);
+  color: var(--acc);
+}
+
+
+/* 6. TARJETAS DE AULAS
+   -------------------------------------------------------------------------- */
+
+.card {
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+/* Aula libre: barra verde a la izquierda. Ocupada: borde punteado, sin relleno */
+.grid > .card:not(.busy) {
+  box-shadow: inset 4px 0 0 var(--ok), var(--shadow);
+}
+.card.busy {
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 10px;
+}
+.top h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--mute);
+}
+
+/* Estado: "Libre hasta 14:00", "En clase", "Reservada" */
+.tag {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tag.ok  { background: var(--okbg); color: var(--ok); }
+.tag.bad { background: var(--busy); color: var(--mute); }
+
+/* Recursos del aula: enchufes, proyector, aire */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+.chip {
+  padding: 3px 9px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+.chip.ok  { background: var(--okbg);  color: var(--ok); }
+.chip.bad { background: var(--badbg); color: var(--bad); }
+
+
+/* 7. AVISOS
+   -------------------------------------------------------------------------- */
+
+/* Aviso dentro de una tarjeta */
+.note {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  background: var(--warnbg);
+  color: var(--warn);
+  font-size: 12.5px;
+}
+
+/* Aviso general sobre la lista */
+.msg {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border-radius: var(--r-md);
+  background: var(--warnbg);
+  color: var(--warn);
+}
+
+
+/* 8. GRILLA SEMANAL DE LABORATORIOS
+   -------------------------------------------------------------------------- */
+
+.scroll {
+  overflow-x: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  min-width: 640px;
+  table-layout: fixed;         /* los 5 días miden lo mismo */
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  padding: 4px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+  font-size: 12.5px;
+}
+tr:last-child td { border-bottom: 0; }
+
+th {
+  padding: 10px 4px;
+  background: var(--bg);
+  color: var(--mute);
+  font-weight: 600;
+}
+
+/* Columna de horas: queda fija al desplazar de costado */
+td:first-child,
+th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 64px;
+  background: var(--card);
+  color: var(--mute);
+}
+th:first-child { background: var(--bg); }
+
+/* Casillas de horario */
+.slot {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.25;
+  transition: background .15s, color .15s, transform .1s;
+}
+.slot:focus-visible { outline-offset: 1px; }
+
+.slot.free {                   /* libre: suave, se completa al pasar el mouse */
+  background: var(--okbg);
+  color: var(--ok);
+  font-weight: 500;
+  cursor: pointer;
+}
+.slot.free:hover {
+  background: var(--ok);
+  color: var(--bg);
+}
+
+.slot.res {                    /* reservado por alguien */
+  background: var(--accbg);
+  color: var(--acc);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: inset 3px 0 0 var(--acc);
+}
+.slot.res:hover { background: var(--line); }
+
+.slot.clase {                  /* clase oficial de Bedelía */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--busy);
+  color: var(--mute);
+}
+
+.slot.free:active,
+.slot.res:active { transform: scale(.97); }
+
+
+/* 9. VISTA POR DÍA Y LISTA DE FALLAS
+   -------------------------------------------------------------------------- */
+
+/* Vista "Día": una fila por hora */
+.list .row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.list .row:last-child { border-bottom: 0; }
+
+/* Fallas reportadas */
+.inc {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 14px 16px;
+}
+.inc + .inc { border-top: 1px solid var(--line); }
+
+
+/* 10. DIÁLOGO Y NOTIFICACIÓN
+   -------------------------------------------------------------------------- */
+
+dialog {
+  width: min(380px, 92vw);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+dialog[open] { animation: pop .18s ease-out; }
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+
+dialog h3 { font-size: 18px; }
+dialog p  { margin: 12px 0 0; }
+
+dialog .f {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+dialog .acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+dialog .f + .acts { margin-top: 0; }
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Mensaje flotante (reserva confirmada, error, etc.) */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  max-width: 90vw;
+  padding: 11px 18px;
+  border-radius: var(--r-md);
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition: opacity .2s, transform .2s;
+}
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+/* 11. PIE DE PÁGINA
+   -------------------------------------------------------------------------- */
+
+footer {
+  padding: 0 18px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+
+/* 12. PANTALLAS CHICAS Y ACCESIBILIDAD
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+  header { padding: 16px 0 0; }
+  .wrap  { padding: 0 14px; }
+  main   { padding: 16px 14px 40px; }
+  h1     { font-size: 21px; }
+
+  nav { margin-left: -12px; }
+  nav button { padding: 12px; }
+
+  .bar > label { flex: 1 1 140px; }
+  .bar > .btn  { flex: 1 1 auto; }
+
+  .grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
